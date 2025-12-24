@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;900&display=swap');
+
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  body {
+    @apply bg-white text-black selection:bg-black selection:text-white transition-colors duration-500 overflow-x-hidden;
+  }
+
+  .dark body {
+    @apply bg-[#060606] text-white selection:bg-white selection:text-black;
+  }
+}
+
+.font-arabic {
+  font-family: 'Cairo', sans-serif;
+}
+
+.font-english {
+  font-family: 'Outfit', 'Inter', sans-serif;
+}
+
+.glass {
+  @apply bg-white/70 dark:bg-black/70 backdrop-blur-xl border border-gray-100/50 dark:border-white/5;
+}
+
+.premium-card {
+  @apply bg-white dark:bg-zinc-900/50 border border-gray-100 dark:border-white/5 shadow-xl shadow-black/5 rounded-[40px] transition-all duration-500 hover:shadow-2xl hover:shadow-blue-600/5 hover:-translate-y-1;
+}
+
+.rich-glow {
+  @apply absolute rounded-full blur-[140px] opacity-20 dark:opacity-30 pointer-events-none;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-20px) rotate(3deg);
+  }
+}
+
+.animate-float {
+  animation: float 8s ease-in-out infinite;
+}
+
+.animate-fade-in-up {
+  @apply opacity-0;
+  animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.delay-100 {
+  animation-delay: 100ms;
+}
+
+.delay-200 {
+  animation-delay: 200ms;
+}
+
+.delay-300 {
+  animation-delay: 300ms;
+}
+
+.delay-500 {
+  animation-delay: 500ms;
+}
