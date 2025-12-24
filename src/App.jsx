@@ -61,7 +61,7 @@ function App() {
   return (
     <ThemeProvider>
       <AuthContext.Provider value={{ user, loading, isMfaVerified, setIsMfaVerified, lang, setLang }}>
-        <BrowserRouter basename={import.meta.env.DEV ? '/' : '/Portfolio'}>
+        <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/blog" element={<Blog />} />

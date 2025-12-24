@@ -13,7 +13,7 @@ export default function About({ lang }) {
 
                     <div className="relative aspect-[4/5] overflow-hidden grayscale hover:grayscale-0 transition-all duration-700 max-w-sm mx-auto lg:max-w-full rounded-[40px] shadow-2xl rotate-2 hover:rotate-0 border-8 border-white dark:border-zinc-900 group">
                         <img
-                            src="/images/madinah.jpg"
+                            src="images/madinah.jpg"
                             alt="Madinah"
                             className="object-cover w-full h-full scale-105 group-hover:scale-100 transition-transform duration-700"
                         />

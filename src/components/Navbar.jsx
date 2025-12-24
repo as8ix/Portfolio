@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { content } from '../data/content';
 import { useTheme } from '../hooks/useTheme';
 
@@ -25,24 +26,22 @@ export default function Navbar({ lang, setLang }) {
                     {/* Logo & Nav Links Area */}
                     <div className="flex items-center gap-8">
                         {/* Logo */}
-                        <div className="flex items-center gap-2">
-                            {/* Placeholder for Logo if needed, or just text */}
-                            {/* Based on image: "نور حمصي" is text on the right. */}
+                        <Link to="/" className="flex items-center gap-2">
                             <h1 className="text-xl font-bold tracking-tighter">
                                 <span className="text-blue-600">as8ix</span>
                             </h1>
-                        </div>
+                        </Link>
 
                         {/* Desktop Nav Links */}
                         <div className="hidden md:flex items-center gap-6">
-                            <a href="/" className="font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">{t.home}</a>
+                            <Link to="/" className="font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">{t.home}</Link>
                             <a href="#" className="font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">{t.about}</a>
                             <a href="#" className="font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">{t.courses}</a>
-                            <a href="/blog" className="font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">{t.blog}</a>
+                            <Link to="/blog" className="font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">{t.blog}</Link>
                             <a href="#" className="font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">{t.services}</a>
                             <a href="#" className="font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">{t.contact}</a>
                             <div className="h-4 w-px bg-gray-200 dark:bg-gray-700 mx-2"></div>
-                            <a href="/login" className="font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors">Login</a>
+                            <Link to="/login" className="font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors">Login</Link>
                         </div>
                     </div>
 
@@ -85,7 +84,7 @@ export default function Navbar({ lang, setLang }) {
 
                         {/* CTA Button */}
                         <a
-                            href="/cv.pdf"
+                            href="cv.pdf"
                             download="Abdalla_CV.pdf"
                             className="hidden sm:inline-block px-6 py-2.5 bg-blue-700 hover:bg-blue-800 text-white font-medium rounded-full shadow-lg shadow-blue-700/20 transition-all transform hover:-translate-y-0.5"
                         >
@@ -110,16 +109,16 @@ export default function Navbar({ lang, setLang }) {
             {/* Mobile Menu */}
             {isMenuOpen && (
                 <div className="md:hidden bg-white dark:bg-[#0a0a0a] border-b border-gray-100 dark:border-white/10 p-4 space-y-4">
-                    <a href="#" className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">{t.home}</a>
-                    <a href="#" className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">{t.about}</a>
-                    <a href="#" className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">{t.courses}</a>
-                    <a href="#" className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">{t.blog}</a>
-                    <a href="#" className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">{t.services}</a>
-                    <a href="#" className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">{t.contact}</a>
-                    <a href="/login" className="block py-2 font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">Login</a>
+                    <Link to="/" onClick={() => setIsMenuOpen(false)} className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">{t.home}</Link>
+                    <a href="#about" onClick={() => setIsMenuOpen(false)} className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">{t.about}</a>
+                    <a href="#courses" onClick={() => setIsMenuOpen(false)} className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">{t.courses}</a>
+                    <Link to="/blog" onClick={() => setIsMenuOpen(false)} className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">{t.blog}</Link>
+                    <a href="#services" onClick={() => setIsMenuOpen(false)} className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">{t.services}</a>
+                    <a href="#contact" onClick={() => setIsMenuOpen(false)} className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">{t.contact}</a>
+                    <Link to="/login" onClick={() => setIsMenuOpen(false)} className="block py-2 font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">Login</Link>
                     <div className="pt-4 border-t border-gray-100 dark:border-white/10">
                         <a
-                            href="/cv.pdf"
+                            href="cv.pdf"
                             download="Abdalla_CV.pdf"
                             className="block w-full text-center px-6 py-3 bg-blue-700 text-white font-medium rounded-full"
                         >

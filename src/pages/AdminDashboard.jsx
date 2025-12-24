@@ -128,124 +128,183 @@ export default function AdminDashboard() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 dark:bg-[#0a0a0a] p-8 text-black dark:text-white">
-            <div className="max-w-5xl mx-auto">
-                <div className="flex justify-between items-center mb-8">
-                    <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+        <div className="min-h-screen bg-white dark:bg-[#060606] p-8 text-black dark:text-white transition-colors duration-500 relative overflow-hidden">
+            {/* Background Glows */}
+            <div className="rich-glow w-[600px] h-[600px] bg-blue-600/10 -top-20 -right-20 animate-float"></div>
+            <div className="rich-glow w-[500px] h-[500px] bg-purple-600/10 -bottom-20 -left-20 animate-float delay-500"></div>
+
+            <div className="max-w-6xl mx-auto relative z-10">
+                <div className="flex justify-between items-end mb-12 animate-fade-in-up">
+                    <div>
+                        <h1 className="text-4xl font-black tracking-tighter mb-2">Dashboard</h1>
+                        <p className="text-gray-500 dark:text-gray-400 font-medium">Manage your portfolio content and analytics.</p>
+                    </div>
                     <div className="flex items-center gap-4">
-                        <button onClick={() => window.location.reload()} className="text-sm text-blue-600 hover:underline">Refresh Data</button>
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="p-3 glass rounded-2xl text-gray-500 hover:text-blue-600 transition-colors"
+                            title="Refresh Data"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                        </button>
                         <button
                             onClick={handleLogout}
-                            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-red-600/20"
+                            className="px-6 py-3 bg-red-600/10 hover:bg-red-600 text-red-600 hover:text-white text-sm font-bold rounded-2xl transition-all border border-red-600/20"
                         >
                             Logout
                         </button>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
                     {/* Stats Cards */}
-                    <div className="bg-white dark:bg-zinc-900 p-8 rounded-3xl shadow border dark:border-zinc-800">
-                        <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium uppercase tracking-wider">Total Sessions</h3>
-                        <p className="text-4xl font-bold mt-2">{stats.visits}</p>
+                    <div className="premium-card p-10 animate-fade-in-up delay-100">
+                        <div className="w-12 h-12 bg-blue-600/10 rounded-2xl flex items-center justify-center mb-6">
+                            <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </div>
+                        <h3 className="text-gray-400 text-xs font-bold uppercase tracking-[0.2em] mb-2">Total Sessions</h3>
+                        <p className="text-5xl font-black tracking-tight">{stats.visits.toLocaleString()}</p>
                     </div>
-                    <div className="bg-white dark:bg-zinc-900 p-8 rounded-3xl shadow border dark:border-zinc-800">
-                        <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium uppercase tracking-wider">Unique Visitors</h3>
-                        <p className="text-4xl font-bold mt-2 text-blue-600">{stats.uniqueVisitors}</p>
+                    <div className="premium-card p-10 animate-fade-in-up delay-200">
+                        <div className="w-12 h-12 bg-purple-600/10 rounded-2xl flex items-center justify-center mb-6">
+                            <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                        </div>
+                        <h3 className="text-gray-400 text-xs font-bold uppercase tracking-[0.2em] mb-2">Unique Visitors</h3>
+                        <p className="text-5xl font-black tracking-tight text-blue-600">{stats.uniqueVisitors.toLocaleString()}</p>
                     </div>
-                    <div className="bg-white dark:bg-zinc-900 p-8 rounded-3xl shadow border dark:border-zinc-800">
-                        <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium uppercase tracking-wider">Total Posts</h3>
-                        <p className="text-4xl font-bold mt-2">{stats.posts}</p>
+                    <div className="premium-card p-10 animate-fade-in-up delay-300">
+                        <div className="w-12 h-12 bg-green-600/10 rounded-2xl flex items-center justify-center mb-6">
+                            <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l4 4v10a2 2 0 01-2 2z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 2v4a2 2 0 002 2h4" />
+                            </svg>
+                        </div>
+                        <h3 className="text-gray-400 text-xs font-bold uppercase tracking-[0.2em] mb-2">Total Posts</h3>
+                        <p className="text-5xl font-black tracking-tight">{stats.posts}</p>
                     </div>
                 </div>
 
-                {/* Create/Edit Post Form */}
-                <div className="bg-white dark:bg-zinc-900 p-8 rounded-3xl shadow mb-12 border dark:border-zinc-800">
-                    <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-xl font-bold">{editingId ? 'Edit Post' : 'Create New Post'}</h2>
-                        {editingId && <button onClick={handleCancelEdit} className="text-sm text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white">Cancel Edit</button>}
-                    </div>
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
+                    {/* Create/Edit Post Form */}
+                    <div className="lg:col-span-3 space-y-8 animate-fade-in-up delay-500">
+                        <div className="glass p-10 rounded-[40px] border dark:border-white/5">
+                            <div className="flex justify-between items-center mb-10">
+                                <h2 className="text-2xl font-black tracking-tight">{editingId ? 'Edit Article' : 'New Article'}</h2>
+                                {editingId && (
+                                    <button onClick={handleCancelEdit} className="text-sm font-bold text-gray-400 hover:text-black dark:hover:text-white transition-colors">
+                                        Discard Changes
+                                    </button>
+                                )}
+                            </div>
 
-                    <form onSubmit={handleCreateOrUpdatePost} className="space-y-6">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Post Title</label>
-                            <input
-                                type="text"
-                                value={title}
-                                onChange={(e) => setTitle(e.target.value)}
-                                className="w-full px-6 py-3 border border-gray-300 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-blue-500 bg-white dark:bg-zinc-800 dark:text-white"
-                                required
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Image URL</label>
-                            <input
-                                type="url"
-                                value={image}
-                                onChange={(e) => setImage(e.target.value)}
-                                className="w-full px-6 py-3 border border-gray-300 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-blue-500 bg-white dark:bg-zinc-800 dark:text-white"
-                                placeholder="https://..."
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Content</label>
-                            <textarea
-                                value={content}
-                                onChange={(e) => setContent(e.target.value)}
-                                rows="6"
-                                className="w-full px-6 py-3 border border-gray-300 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-blue-500 bg-white dark:bg-zinc-800 dark:text-white"
-                                required
-                            ></textarea>
-                        </div>
-
-                        <div className="flex gap-4">
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className={`px-8 py-3 rounded-xl text-white font-bold transition-all transform hover:-translate-y-0.5 ${editingId ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-600/20'} `}
-                            >
-                                {loading ? 'Saving...' : (editingId ? 'Update Post' : 'Publish Post')}
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                {/* Posts List */}
-                <div className="bg-white dark:bg-zinc-900 p-6 rounded-lg shadow border dark:border-zinc-800">
-                    <h2 className="text-xl font-bold mb-6">Recent Posts</h2>
-                    {posts.length === 0 ? (
-                        <p className="text-gray-500 dark:text-gray-400">No posts yet.</p>
-                    ) : (
-                        <div className="space-y-4">
-                            {posts.map(post => (
-                                <div key={post.id} className="flex items-center justify-between p-4 border border-gray-100 dark:border-zinc-700 rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors">
-                                    <div className="flex items-center gap-4">
-                                        {post.image && <img src={post.image} alt={post.title} className="w-16 h-16 object-cover rounded" />}
-                                        <div>
-                                            <h3 className="font-bold text-lg">{post.title}</h3>
-                                            <p className="text-xs text-gray-500">{new Date(post.createdAt?.seconds * 1000).toLocaleDateString()}</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <button
-                                            onClick={() => handleEdit(post)}
-                                            className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded text-gray-700"
-                                        >
-                                            Edit
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(post.id)}
-                                            className="px-3 py-1 text-sm bg-red-50 hover:bg-red-100 text-red-600 rounded"
-                                        >
-                                            Delete
-                                        </button>
-                                    </div>
+                            <form onSubmit={handleCreateOrUpdatePost} className="space-y-8">
+                                <div className="space-y-2">
+                                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-4">Title</label>
+                                    <input
+                                        type="text"
+                                        value={title}
+                                        onChange={(e) => setTitle(e.target.value)}
+                                        className="w-full px-8 py-4 bg-gray-50 dark:bg-zinc-800/50 border-none rounded-2xl focus:ring-2 focus:ring-blue-600 outline-none dark:text-white font-medium placeholder:text-gray-400 transition-all shadow-inner"
+                                        placeholder="Enter Post Title..."
+                                        required
+                                    />
                                 </div>
-                            ))}
+
+                                <div className="space-y-2">
+                                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-4">Image URL</label>
+                                    <input
+                                        type="url"
+                                        value={image}
+                                        onChange={(e) => setImage(e.target.value)}
+                                        className="w-full px-8 py-4 bg-gray-50 dark:bg-zinc-800/50 border-none rounded-2xl focus:ring-2 focus:ring-blue-600 outline-none dark:text-white font-medium placeholder:text-gray-400 transition-all shadow-inner"
+                                        placeholder="https://images.unsplash.com/..."
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-4">Content</label>
+                                    <textarea
+                                        value={content}
+                                        onChange={(e) => setContent(e.target.value)}
+                                        rows="10"
+                                        className="w-full px-8 py-6 bg-gray-50 dark:bg-zinc-800/50 border-none rounded-[32px] focus:ring-2 focus:ring-blue-600 outline-none dark:text-white font-medium placeholder:text-gray-400 transition-all shadow-inner resize-none"
+                                        placeholder="Write your story here..."
+                                        required
+                                    ></textarea>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    className={`w-full py-5 rounded-2xl text-white font-black tracking-widest uppercase text-sm transition-all transform hover:scale-[1.01] active:scale-[0.99] shadow-2xl ${editingId ? 'bg-green-600 shadow-green-600/20' : 'bg-blue-600 shadow-blue-600/20'} `}
+                                >
+                                    {loading ? (
+                                        <div className="flex items-center justify-center gap-3">
+                                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                            <span>Processing...</span>
+                                        </div>
+                                    ) : (editingId ? 'Update Article' : 'Publish Article')}
+                                </button>
+                            </form>
                         </div>
-                    )}
+                    </div>
+
+                    {/* Posts List */}
+                    <div className="lg:col-span-2 space-y-8 animate-fade-in-up delay-700">
+                        <div className="glass p-10 rounded-[40px] border dark:border-white/5 max-h-[900px] overflow-y-auto custom-scrollbar">
+                            <h2 className="text-2xl font-black tracking-tight mb-10">Recent Content</h2>
+                            {posts.length === 0 ? (
+                                <div className="text-center py-20">
+                                    <p className="text-gray-400 font-medium">No articles published yet.</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-6">
+                                    {posts.map(post => (
+                                        <div key={post.id} className="p-6 glass rounded-3xl border border-gray-100 dark:border-white/5 hover:border-blue-600/30 transition-all group">
+                                            <div className="flex items-start gap-4">
+                                                {post.image ? (
+                                                    <img src={post.image} alt={post.title} className="w-20 h-20 object-cover rounded-2xl grayscale group-hover:grayscale-0 transition-all" />
+                                                ) : (
+                                                    <div className="w-20 h-20 bg-gray-100 dark:bg-zinc-800 rounded-2xl flex items-center justify-center">
+                                                        <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                        </svg>
+                                                    </div>
+                                                )}
+                                                <div className="flex-1 min-w-0">
+                                                    <h3 className="font-bold text-lg leading-tight mb-1 truncate dark:text-white">{post.title}</h3>
+                                                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-4">
+                                                        {new Date(post.createdAt?.seconds * 1000).toLocaleDateString()}
+                                                    </p>
+                                                    <div className="flex items-center gap-2">
+                                                        <button
+                                                            onClick={() => handleEdit(post)}
+                                                            className="px-4 py-1.5 text-[11px] font-black uppercase tracking-widest bg-blue-600/10 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg transition-all"
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDelete(post.id)}
+                                                            className="px-4 py-1.5 text-[11px] font-black uppercase tracking-widest bg-red-600/10 text-red-600 hover:bg-red-600 hover:text-white rounded-lg transition-all"
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
