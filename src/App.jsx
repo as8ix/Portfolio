@@ -38,6 +38,13 @@ function App() {
     () => sessionStorage.getItem('isMfaVerified') === 'true'
   );
 
+  const [lang, setLang] = useState('ar');
+
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  }, [lang]);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -53,7 +60,7 @@ function App() {
 
   return (
     <ThemeProvider>
-      <AuthContext.Provider value={{ user, loading, isMfaVerified, setIsMfaVerified }}>
+      <AuthContext.Provider value={{ user, loading, isMfaVerified, setIsMfaVerified, lang, setLang }}>
         <BrowserRouter basename={import.meta.env.DEV ? '/' : '/Portfolio'}>
           <Routes>
             <Route path="/" element={<Home />} />

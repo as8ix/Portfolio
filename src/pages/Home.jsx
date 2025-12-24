@@ -9,12 +9,7 @@ import { db } from '../firebase';
 import { doc, updateDoc, increment, setDoc, getDoc } from 'firebase/firestore';
 
 export default function Home() {
-    const [lang, setLang] = useState('ar');
-
-    useEffect(() => {
-        document.documentElement.lang = lang;
-        document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-    }, [lang]);
+    const { lang, setLang } = useAuth();
 
     useEffect(() => {
         const trackVisit = async () => {

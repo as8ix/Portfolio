@@ -1,18 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../App';
 import Navbar from '../components/Navbar';
 import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 
 export default function Blog() {
-    const [lang, setLang] = useState('ar');
+    const { lang, setLang } = useAuth();
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        document.documentElement.lang = lang;
-        document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-    }, [lang]);
 
     useEffect(() => {
         const fetchPosts = async () => {
