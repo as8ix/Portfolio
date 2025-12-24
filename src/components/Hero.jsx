@@ -1,8 +1,10 @@
 import { content } from '../data/content';
+import useScrollReveal from '../hooks/useScrollReveal';
 
 export default function Hero({ lang }) {
     const t = content[lang];
     const isArabic = lang === 'ar';
+    const [revealRef, isVisible] = useScrollReveal({ threshold: 0.3 });
 
     return (
         <header className="relative w-full min-h-[90vh] flex flex-col justify-center px-6 md:px-20 pt-32 pb-20 overflow-hidden">
@@ -27,11 +29,14 @@ export default function Hero({ lang }) {
 
                 {/* Image Section */}
                 <div className="order-1 md:order-2 flex justify-center md:justify-end">
-                    <div className="relative w-full max-w-xs md:max-w-md aspect-[3/4] overflow-hidden grayscale hover:grayscale-0 transition-all duration-700 ease-in-out shadow-2xl rounded-[40px] -rotate-2 hover:rotate-0 border-8 border-white dark:border-zinc-900 group">
+                    <div
+                        ref={revealRef}
+                        className={`relative w-full max-w-xs md:max-w-md aspect-[3/4] overflow-hidden transition-all duration-1000 ease-in-out shadow-2xl rounded-[40px] border-8 border-white dark:border-zinc-900 group ${isVisible ? 'grayscale-0 scale-100 rotate-0' : 'grayscale scale-105 -rotate-2'
+                            }`}>
                         <img
                             src="images/portrait_main.jpg"
                             alt="Abdalla Portrait"
-                            className="object-cover w-full h-full scale-105 group-hover:scale-100 transition-transform duration-700"
+                            className="object-cover w-full h-full"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     </div>

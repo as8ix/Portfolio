@@ -6,13 +6,13 @@ import { getAnalytics } from "firebase/analytics";
 // TODO: Replace the following with your app's Firebase project configuration
 // See: https://firebase.google.com/docs/web/learn-more#config-object
 const firebaseConfig = {
-    apiKey: "AIzaSyAsMx0eNtj5p1bfKeRFvPXR6-EDkNosOWA",
-    authDomain: "portfolio-bed2b.firebaseapp.com",
-    projectId: "portfolio-bed2b",
-    storageBucket: "portfolio-bed2b.firebasestorage.app",
-    messagingSenderId: "406886920408",
-    appId: "1:406886920408:web:16031877bfc7805215e7ad",
-    measurementId: "G-DF28S28B4W"
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase

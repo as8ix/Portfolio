@@ -1,6 +1,6 @@
 export const content = {
     ar: {
-        name: "عبدالله عبدالعزيز عشير",
+        name: "عبدالله عبدالعزيز أشير",
         birth: "مواليد 2006، من الصومال",
         education: "شهادة الثانوية العامة من المملكة العربية السعودية",
         heroTitle: "مصمم ويب & مصور",
@@ -13,15 +13,19 @@ export const content = {
             { title: "فضول تقني", desc: "مدفوع بالمشاريع وأتعلم من الأساسيات بصبر." },
             { title: "عمق لا تعقيد", desc: "أبحث عن العمق وأتجنب التعقيد غير الضروري." },
         ],
-        bio: "شخص يجمع بين الانضباط، الإيمان، والفضول التقني. أهدف لإنشاء أعمال مفيدة وجديرة بالثقة.",
         contact: "تواصل معي",
+        phone: "+966 50 976 2389",
+        socials: {
+            github: "https://github.com/as8ix/",
+            x: "https://x.com/as8ix_dev",
+            instagram: "https://www.instagram.com/as8ix/",
+            coffee: "https://buymeacoffee.com/abdallaashm"
+        },
         footer: "صنع بواسطة عبدالله © 2025",
         navbar: {
             home: "الرئيسية",
             about: "عني",
-            courses: "الدورات",
             blog: "المدونة",
-            services: "الخدمات",
             contact: "تواصل",
             cta: "تحميل السيرة الذاتية"
         },
@@ -59,15 +63,19 @@ export const content = {
             { title: "Curious & Driven", desc: "Project-driven, patient with learning from the ground up." },
             { title: "Depth over Complexity", desc: "Seeks depth but avoids unnecessary complexity." },
         ],
-        bio: "Someone who blends discipline, faith, and technical curiosity, aiming to create work that’s both useful and trustworthy.",
         contact: "Contact Me",
+        phone: "+966 50 976 2389",
+        socials: {
+            github: "https://github.com/as8ix/",
+            x: "https://x.com/as8ix_dev",
+            instagram: "https://www.instagram.com/as8ix/",
+            coffee: "https://buymeacoffee.com/abdallaashm"
+        },
         footer: "Made by Abdalla © 2025",
         navbar: {
             home: "Home",
             about: "About Me",
-            courses: "Courses",
             blog: "Blog",
-            services: "Services",
             contact: "Contact",
             cta: "Download CV"
         },

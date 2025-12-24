@@ -35,11 +35,9 @@ export default function Navbar({ lang, setLang }) {
                         {/* Desktop Nav Links */}
                         <div className="hidden md:flex items-center gap-6">
                             <Link to="/" className="font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">{t.home}</Link>
-                            <a href="#" className="font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">{t.about}</a>
-                            <a href="#" className="font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">{t.courses}</a>
+                            <a href="#about" className="font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">{t.about}</a>
                             <Link to="/blog" className="font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">{t.blog}</Link>
-                            <a href="#" className="font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">{t.services}</a>
-                            <a href="#" className="font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">{t.contact}</a>
+                            <a href="#contact" className="font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">{t.contact}</a>
                             <div className="h-4 w-px bg-gray-200 dark:bg-gray-700 mx-2"></div>
                             <Link to="/login" className="font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors">Login</Link>
                         </div>
@@ -111,9 +109,7 @@ export default function Navbar({ lang, setLang }) {
                 <div className="md:hidden bg-white dark:bg-[#0a0a0a] border-b border-gray-100 dark:border-white/10 p-4 space-y-4">
                     <Link to="/" onClick={() => setIsMenuOpen(false)} className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">{t.home}</Link>
                     <a href="#about" onClick={() => setIsMenuOpen(false)} className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">{t.about}</a>
-                    <a href="#courses" onClick={() => setIsMenuOpen(false)} className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">{t.courses}</a>
                     <Link to="/blog" onClick={() => setIsMenuOpen(false)} className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">{t.blog}</Link>
-                    <a href="#services" onClick={() => setIsMenuOpen(false)} className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">{t.services}</a>
                     <a href="#contact" onClick={() => setIsMenuOpen(false)} className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">{t.contact}</a>
                     <Link to="/login" onClick={() => setIsMenuOpen(false)} className="block py-2 font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">Login</Link>
                     <div className="pt-4 border-t border-gray-100 dark:border-white/10">

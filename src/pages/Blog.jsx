@@ -2,8 +2,64 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../App';
 import Navbar from '../components/Navbar';
+import useScrollReveal from '../hooks/useScrollReveal';
 import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
+
+function BlogCard({ post, index, lang }) {
+    const [revealRef, isVisible] = useScrollReveal({ threshold: 0.2 });
+
+    return (
+        <Link
+            ref={revealRef}
+            to={`/blog/${post.id}`}
+            className={`block group transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                }`}
+            style={{ animationDelay: `${(index % 3) * 100}ms` }}
+        >
+            <article className={`premium-card h-full flex flex-col transition-all duration-700 ${isVisible ? 'grayscale-0' : 'grayscale'
+                } group-hover:border-blue-600/30`}>
+                {post.image && (
+                    <div className="aspect-[16/10] overflow-hidden rounded-t-[38px] relative">
+                        <img
+                            src={post.image}
+                            alt={post.title}
+                            className={`w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-110`}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    </div>
+                )}
+                <div className="p-8 flex flex-col flex-1">
+                    <div className="flex items-center gap-3 mb-4">
+                        <span className="h-px w-8 bg-blue-600/30"></span>
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600">Article</span>
+                    </div>
+                    <h2 className="text-2xl font-bold mb-4 line-clamp-2 leading-tight dark:text-white group-hover:text-blue-600 transition-colors">
+                        {post.title}
+                    </h2>
+                    <p className="text-gray-500 dark:text-gray-400 text-[15px] mb-6 line-clamp-3 flex-1 leading-relaxed">
+                        {post.content}
+                    </p>
+                    <div className="pt-6 border-t border-gray-100 dark:border-white/5 flex justify-between items-center">
+                        <span className="text-[11px] font-medium text-gray-400 uppercase tracking-widest">
+                            {new Date(post.createdAt?.seconds * 1000).toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric'
+                            })}
+                        </span>
+                        <div className="flex items-center gap-1.5 text-[11px] font-bold text-gray-400 group-hover:text-blue-600 transition-colors uppercase tracking-widest">
+                            <span>Read More</span>
+                            <svg className="w-3 h-3 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </Link>
+    );
+}
 
 export default function Blog() {
     const { lang, setLang } = useAuth();
@@ -57,52 +113,7 @@ export default function Blog() {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                         {posts.map((post, index) => (
-                            <Link
-                                key={post.id}
-                                to={`/blog/${post.id}`}
-                                className={`block group animate-fade-in-up`}
-                                style={{ animationDelay: `${(index + 1) * 100}ms` }}
-                            >
-                                <article className="premium-card h-full flex flex-col group-hover:border-blue-600/30 transition-all duration-500">
-                                    {post.image && (
-                                        <div className="aspect-[16/10] overflow-hidden rounded-t-[38px] relative">
-                                            <img
-                                                src={post.image}
-                                                alt={post.title}
-                                                className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700 ease-out"
-                                            />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                                        </div>
-                                    )}
-                                    <div className="p-8 flex flex-col flex-1">
-                                        <div className="flex items-center gap-3 mb-4">
-                                            <span className="h-px w-8 bg-blue-600/30"></span>
-                                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600">Article</span>
-                                        </div>
-                                        <h2 className="text-2xl font-bold mb-4 line-clamp-2 leading-tight dark:text-white group-hover:text-blue-600 transition-colors">
-                                            {post.title}
-                                        </h2>
-                                        <p className="text-gray-500 dark:text-gray-400 text-[15px] mb-6 line-clamp-3 flex-1 leading-relaxed">
-                                            {post.content}
-                                        </p>
-                                        <div className="pt-6 border-t border-gray-100 dark:border-white/5 flex justify-between items-center">
-                                            <span className="text-[11px] font-medium text-gray-400 uppercase tracking-widest">
-                                                {new Date(post.createdAt?.seconds * 1000).toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', {
-                                                    month: 'short',
-                                                    day: 'numeric',
-                                                    year: 'numeric'
-                                                })}
-                                            </span>
-                                            <div className="flex items-center gap-1.5 text-[11px] font-bold text-gray-400 group-hover:text-blue-600 transition-colors uppercase tracking-widest">
-                                                <span>Read More</span>
-                                                <svg className="w-3 h-3 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 5l7 7-7 7" />
-                                                </svg>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </article>
-                            </Link>
+                            <BlogCard key={post.id} post={post} index={index} lang={lang} />
                         ))}
                     </div>
                 )}

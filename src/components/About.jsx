@@ -1,7 +1,9 @@
 import { content } from '../data/content';
+import useScrollReveal from '../hooks/useScrollReveal';
 
 export default function About({ lang }) {
     const t = content[lang];
+    const [revealRef, isVisible] = useScrollReveal({ threshold: 0.3 });
 
     return (
         <section className="py-32 px-6 md:px-20 bg-white dark:bg-[#060606] relative overflow-hidden">
@@ -11,11 +13,14 @@ export default function About({ lang }) {
             <div className="max-w-7xl mx-auto relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
 
-                    <div className="relative aspect-[4/5] overflow-hidden grayscale hover:grayscale-0 transition-all duration-700 max-w-sm mx-auto lg:max-w-full rounded-[40px] shadow-2xl rotate-2 hover:rotate-0 border-8 border-white dark:border-zinc-900 group">
+                    <div
+                        ref={revealRef}
+                        className={`relative aspect-[4/5] overflow-hidden transition-all duration-1000 max-w-sm mx-auto lg:max-w-full rounded-[40px] shadow-2xl border-8 border-white dark:border-zinc-900 group ${isVisible ? 'grayscale-0 rotate-0' : 'grayscale rotate-2'
+                            }`}>
                         <img
                             src="images/madinah.jpg"
                             alt="Madinah"
-                            className="object-cover w-full h-full scale-105 group-hover:scale-100 transition-transform duration-700"
+                            className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-110"
                         />
                     </div>
 

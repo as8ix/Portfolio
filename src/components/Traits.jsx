@@ -1,4 +1,30 @@
 import { content } from '../data/content';
+import useScrollReveal from '../hooks/useScrollReveal';
+
+function TraitCard({ trait, index }) {
+    const [revealRef, isVisible] = useScrollReveal({ threshold: 0.2 });
+
+    return (
+        <div
+            ref={revealRef}
+            className={`premium-card p-10 group transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-12 scale-95'
+                }`}
+            style={{ transitionDelay: `${index * 150}ms` }}
+        >
+            <div className="w-14 h-14 bg-blue-600 dark:bg-white rounded-2xl mb-8 flex items-center justify-center text-white dark:text-black shadow-lg shadow-blue-600/20 group-hover:scale-110 transition-transform">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+            </div>
+            <h3 className="text-2xl font-bold mb-4 dark:text-white">
+                {trait.title}
+            </h3>
+            <p className="text-lg text-gray-500 dark:text-gray-400 leading-relaxed">
+                {trait.desc}
+            </p>
+        </div>
+    );
+}
 
 export default function Traits({ lang }) {
     const t = content[lang];
@@ -15,19 +41,7 @@ export default function Traits({ lang }) {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {t.traits.map((trait, index) => (
-                        <div key={index} className="premium-card p-10 group animate-fade-in-up" style={{ animationDelay: `${index * 150}ms` }}>
-                            <div className="w-14 h-14 bg-blue-600 dark:bg-white rounded-2xl mb-8 flex items-center justify-center text-white dark:text-black shadow-lg shadow-blue-600/20 group-hover:scale-110 transition-transform">
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                </svg>
-                            </div>
-                            <h3 className="text-2xl font-bold mb-4 dark:text-white">
-                                {trait.title}
-                            </h3>
-                            <p className="text-lg text-gray-500 dark:text-gray-400 leading-relaxed">
-                                {trait.desc}
-                            </p>
-                        </div>
+                        <TraitCard key={index} trait={trait} index={index} />
                     ))}
                 </div>
             </div>
