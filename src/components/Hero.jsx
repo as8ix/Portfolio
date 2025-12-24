@@ -29,7 +29,7 @@ export default function Hero({ lang }) {
                 <div className="order-1 md:order-2 flex justify-center md:justify-end">
                     <div className="relative w-full max-w-xs md:max-w-md aspect-[3/4] overflow-hidden grayscale hover:grayscale-0 transition-all duration-700 ease-in-out shadow-2xl rounded-[40px] -rotate-2 hover:rotate-0 border-8 border-white dark:border-zinc-900 group">
                         <img
-                            src="/images/portrait_main.jpg"
+                            src="images/portrait_main.jpg"
                             alt="Abdalla Portrait"
                             className="object-cover w-full h-full scale-105 group-hover:scale-100 transition-transform duration-700"
                         />

@@ -50,6 +50,7 @@ export default function Login() {
                 await Promise.race([storeOTP(), timeout(10000)]);
 
                 // Phase 4: Send Actual Email via EmailJS
+                // Phase 4: Send Actual Email via EmailJS
                 setStatus('sending');
 
                 await emailjs.send('service_010hqp8', 'template_lfkek8r', {
@@ -157,7 +158,8 @@ export default function Login() {
                                 <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                                 {status === 'verifying' ? 'Verifying...' :
                                     status === 'generating' ? 'Generating Code...' :
-                                        status === 'sending' ? 'Redirecting...' : 'Signing In...'}
+                                        status === 'sending' ? 'Sending Code...' :
+                                            status === 'redirecting' ? 'Redirecting...' : 'Signing In...'}
                             </span>
                         ) : 'Sign In'}
                     </button>
