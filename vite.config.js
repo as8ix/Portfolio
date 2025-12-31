@@ -13,5 +13,5 @@ export default defineConfig(({ command }) => ({
   optimizeDeps: {
     exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/util']
   },
-  base: '/',
+  base: '/Portfolio/',
 }))
