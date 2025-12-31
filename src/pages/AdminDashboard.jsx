@@ -262,18 +262,18 @@ export default function AdminDashboard() {
     };
 
     return (
-        <div className="min-h-screen bg-white dark:bg-[#060606] p-8 text-black dark:text-white transition-colors duration-500 relative overflow-hidden">
+        <div className="min-h-screen bg-white dark:bg-[#060606] p-4 md:p-8 text-black dark:text-white transition-colors duration-500 relative overflow-hidden">
             {/* Background Glows */}
             <div className="rich-glow w-[600px] h-[600px] bg-blue-600/10 -top-20 -right-20 animate-float"></div>
             <div className="rich-glow w-[500px] h-[500px] bg-purple-600/10 -bottom-20 -left-20 animate-float delay-500"></div>
 
             <div className="max-w-6xl mx-auto relative z-10">
-                <div className="flex justify-between items-end mb-12 animate-fade-in-up">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12 animate-fade-in-up">
                     <div>
-                        <h1 className="text-4xl font-black tracking-tighter mb-2">Dashboard</h1>
-                        <p className="text-gray-500 dark:text-gray-400 font-medium">Manage your portfolio content and analytics.</p>
+                        <h1 className="text-3xl md:text-4xl font-black tracking-tighter mb-2">Dashboard</h1>
+                        <p className="text-gray-500 dark:text-gray-400 font-medium text-sm md:text-base">Manage your portfolio content and analytics.</p>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3 md:gap-4 w-full md:w-auto">
                         <button
                             onClick={toggleTheme}
                             className="p-3 glass rounded-2xl text-gray-500 hover:text-blue-600 transition-colors"
@@ -315,35 +315,44 @@ export default function AdminDashboard() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-                    {/* Stats Cards */}
-                    <div className="premium-card p-10 animate-fade-in-up delay-100">
-                        <div className="w-12 h-12 bg-blue-600/10 rounded-2xl flex items-center justify-center mb-6">
-                            <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {/* Stats Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-16">
+                    <div className="premium-card p-6 md:p-10 animate-fade-in-up delay-100">
+                        <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-600/10 rounded-2xl flex items-center justify-center mb-4 md:mb-6">
+                            <svg className="w-5 h-5 md:w-6 md:h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                             </svg>
                         </div>
-                        <h3 className="text-gray-400 text-xs font-bold uppercase tracking-[0.2em] mb-2">Total Sessions</h3>
-                        <p className="text-5xl font-black tracking-tight">{stats.visits.toLocaleString()}</p>
+                        <h3 className="text-gray-400 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] mb-2">Total Sessions</h3>
+                        <p className="text-3xl md:text-5xl font-black tracking-tight">{stats.visits.toLocaleString()}</p>
                     </div>
-                    <div className="premium-card p-10 animate-fade-in-up delay-200">
-                        <div className="w-12 h-12 bg-purple-600/10 rounded-2xl flex items-center justify-center mb-6">
-                            <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="premium-card p-6 md:p-10 animate-fade-in-up delay-200">
+                        <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-600/10 rounded-2xl flex items-center justify-center mb-4 md:mb-6">
+                            <svg className="w-5 h-5 md:w-6 md:h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
                         </div>
-                        <h3 className="text-gray-400 text-xs font-bold uppercase tracking-[0.2em] mb-2">Unique Visitors</h3>
-                        <p className="text-5xl font-black tracking-tight text-blue-600">{stats.uniqueVisitors.toLocaleString()}</p>
+                        <h3 className="text-gray-400 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] mb-2">Unique Visitors</h3>
+                        <p className="text-3xl md:text-5xl font-black tracking-tight text-blue-600">{stats.uniqueVisitors.toLocaleString()}</p>
                     </div>
-                    <div className="premium-card p-10 animate-fade-in-up delay-300">
-                        <div className="w-12 h-12 bg-green-600/10 rounded-2xl flex items-center justify-center mb-6">
-                            <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="premium-card p-6 md:p-10 animate-fade-in-up delay-300">
+                        <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-600/10 rounded-2xl flex items-center justify-center mb-4 md:mb-6">
+                            <svg className="w-5 h-5 md:w-6 md:h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                            </svg>
+                        </div>
+                        <h3 className="text-gray-400 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] mb-2">Articles</h3>
+                        <p className="text-3xl md:text-5xl font-black tracking-tight">{stats.posts}</p>
+                    </div>
+                    <div className="premium-card p-6 md:p-10 animate-fade-in-up delay-300">
+                        <div className="w-10 h-10 md:w-12 md:h-12 bg-green-600/10 rounded-2xl flex items-center justify-center mb-4 md:mb-6">
+                            <svg className="w-5 h-5 md:w-6 md:h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
                         </div>
-                        <h3 className="text-gray-400 text-xs font-bold uppercase tracking-[0.2em] mb-2">Messages</h3>
-                        <p className="text-5xl font-black tracking-tight">{stats.messages}</p>
+                        <h3 className="text-gray-400 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] mb-2">Messages</h3>
+                        <p className="text-3xl md:text-5xl font-black tracking-tight">{stats.messages}</p>
                     </div>
                 </div>
 
@@ -367,7 +376,7 @@ export default function AdminDashboard() {
                     <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
                         {/* Create/Edit Post Form */}
                         <div className="lg:col-span-3 space-y-8 animate-fade-in-up delay-500">
-                            <div className="glass p-10 rounded-[40px] border dark:border-white/5">
+                            <div className="glass p-6 md:p-10 rounded-[32px] md:rounded-[40px] border dark:border-white/5">
                                 <div className="flex justify-between items-center mb-10">
                                     <h2 className="text-2xl font-black tracking-tight">{editingId ? 'Edit Article' : 'New Article'}</h2>
                                     {editingId && (
@@ -489,7 +498,7 @@ export default function AdminDashboard() {
 
                         {/* Posts List */}
                         <div className="lg:col-span-2 space-y-8 animate-fade-in-up delay-700">
-                            <div className="glass p-10 rounded-[40px] border dark:border-white/5 max-h-[900px] overflow-y-auto custom-scrollbar">
+                            <div className="glass p-6 md:p-10 rounded-[32px] md:rounded-[40px] border dark:border-white/5 max-h-[900px] overflow-y-auto custom-scrollbar">
                                 <h2 className="text-2xl font-black tracking-tight mb-10">Recent Content</h2>
                                 {posts.length === 0 ? (
                                     <div className="text-center py-20">
@@ -498,12 +507,8 @@ export default function AdminDashboard() {
                                 ) : (
                                     <div className="space-y-6">
                                         {posts.map(post => (
-                                            <div key={post.id} className="p-4 glass rounded-3xl border border-gray-100 dark:border-white/5 hover:border-blue-600/30 transition-all group relative overflow-hidden">
-
-                                                <div className="flex items-center justify-between gap-4" dir="ltr">
-                                                    {/* Actions (Left side now, or keep Right?) */}
-                                                    {/* User screenshot showed Actions on Left/Bottom being weird. Let's make it clean: Content Left, Actions/Image Right */}
-
+                                            <div key={post.id} className="p-4 md:p-5 glass rounded-3xl border border-gray-100 dark:border-white/5 hover:border-blue-600/30 transition-all group relative overflow-hidden">
+                                                <div className="flex flex-col-reverse sm:flex-row items-start sm:items-center justify-between gap-4" dir="ltr">
                                                     <div className="flex-1 min-w-0 pr-4">
                                                         <h3 className="font-bold text-lg leading-tight mb-1 truncate dark:text-white" title={post.title}>{post.title}</h3>
                                                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
@@ -575,36 +580,36 @@ export default function AdminDashboard() {
                 {activeTab === 'messages' && (
                     /* Messages Tab Content */
                     <div className="space-y-8 animate-fade-in-up">
-                        <div className="glass p-10 rounded-[40px] border dark:border-white/5">
-                            <div className="flex justify-between items-center mb-10">
-                                <h2 className="text-2xl font-black tracking-tight">Inbox</h2>
+                        <div className="glass p-6 md:p-10 rounded-[32px] md:rounded-[40px] border dark:border-white/5">
+                            <div className="flex justify-between items-center mb-8 md:mb-10">
+                                <h2 className="text-xl md:text-2xl font-black tracking-tight">Inbox</h2>
                                 <button onClick={fetchMessages} className="text-sm font-bold text-blue-600">Refresh</button>
                             </div>
 
                             {messages.length === 0 ? (
                                 <div className="text-center py-20">
-                                    <p className="text-gray-400 font-medium">Your inbox is empty.</p>
+                                    <p className="text-gray-400 font-medium font-arabic">لا توجد رسائل حالياً.</p>
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                                     {messages.map(msg => (
-                                        <div key={msg.id} className="p-8 glass rounded-3xl border border-gray-100 dark:border-white/5 hover:border-blue-600/30 transition-all group relative">
-                                            <div className="flex justify-between items-start mb-6">
-                                                <div>
-                                                    <h3 className="font-bold text-xl mb-1">{msg.user_name}</h3>
-                                                    <p className="text-sm text-blue-600 font-medium">{msg.user_email}</p>
+                                        <div key={msg.id} className="p-6 md:p-8 glass rounded-3xl border border-gray-100 dark:border-white/5 hover:border-blue-600/30 transition-all group relative overflow-hidden">
+                                            <div className="flex justify-between items-start mb-4 md:mb-6">
+                                                <div className="min-w-0 flex-1">
+                                                    <h3 className="font-bold text-lg md:text-xl mb-1 truncate">{msg.user_name}</h3>
+                                                    <p className="text-xs md:text-sm text-blue-600 font-medium truncate">{msg.user_email}</p>
                                                 </div>
                                                 <button
                                                     onClick={() => handleDeleteMessage(msg.id)}
-                                                    className="p-2 text-gray-300 hover:text-red-600 transition-colors"
+                                                    className="p-2 text-gray-300 hover:text-red-600 transition-colors flex-shrink-0"
                                                 >
                                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                     </svg>
                                                 </button>
                                             </div>
-                                            <div className="bg-gray-50 dark:bg-zinc-800/50 p-6 rounded-2xl mb-4">
-                                                <p className="text-gray-600 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">{msg.message}</p>
+                                            <div className="bg-gray-50 dark:bg-zinc-800/50 p-4 md:p-6 rounded-2xl mb-4">
+                                                <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 whitespace-pre-wrap leading-relaxed break-words">{msg.message}</p>
                                             </div>
                                             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                                                 {msg.createdAt?.seconds ? new Date(msg.createdAt.seconds * 1000).toLocaleString() : 'Just now'}
@@ -617,6 +622,7 @@ export default function AdminDashboard() {
                     </div>
                 )}
             </div>
+
             {/* In-App Compressor */}
             {fileToCompress && (
                 <VideoCompressor
