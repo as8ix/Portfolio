@@ -4,6 +4,8 @@ import Navbar from '../components/Navbar';
 import { useAuth } from '../App';
 import { content } from '../data/content';
 import { Link } from 'react-router-dom';
+import { db } from '../firebase';
+import { collection, addDoc } from 'firebase/firestore';
 
 export default function Contact() {
     const { lang, setLang } = useAuth();
@@ -40,35 +42,28 @@ export default function Contact() {
         };
 
         try {
-            // 1. Try to save to Firestore first (as a database record)
-            // This ensures you never lose a message even if EmailJS fails
-            const { db } = await import('../firebase');
-            const { collection, addDoc } = await import('firebase/firestore');
+            // 1. Save to Firestore (Database Backup)
+            // This collection name must match what we fetch in AdminDashboard
             await addDoc(collection(db, "messages"), formData);
             console.log("Message saved to Firestore");
 
-            // 2. Try to send via EmailJS
-            if (!serviceId || !templateId || !publicKey) {
-                console.error("EmailJS keys are missing in .env. Check VITE_EMAILJS_SERVICE_ID, VITE_EMAILJS_TEMPLATE_ID, and VITE_EMAILJS_PUBLIC_KEY");
-                // We don't set status to error immediately if Firestore worked, 
-                // but let's assume the user wants the email too.
-                throw new Error("Missing EmailJS Configuration");
+            // 2. Try to send via EmailJS (Notification)
+            if (serviceId && templateId && publicKey) {
+                try {
+                    await emailjs.sendForm(serviceId, templateId, form.current, publicKey);
+                } catch (emailError) {
+                    console.warn("EmailJS failed, but message was saved to database:", emailError);
+                }
+            } else {
+                console.warn("EmailJS keys missing - message only saved to database.");
             }
 
-            await emailjs.sendForm(serviceId, templateId, form.current, publicKey);
+            // If we reached here, Firestore at least worked
             setStatus('success');
             form.current.reset();
         } catch (error) {
             console.error("Contact Form Error:", error);
-            // If it's just an EmailJS error but it saved to Firestore, maybe we still show success?
-            // For now, let's show success if it at least saved to Firestore, but log the email failure.
-            setStatus('success'); // User sees success because we have their message in Firestore
-            form.current.reset();
-
-            // If both failed, then show error (unlikely if Firebase is set up)
-            if (error.message === "Missing EmailJS Configuration") {
-                console.warn("Email was not sent, but message was saved to your database.");
-            }
+            setStatus('error'); // This will show the red error message
         } finally {
             setLoading(false);
         }

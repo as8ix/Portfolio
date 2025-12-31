@@ -25,6 +25,12 @@ service cloud.firestore {
       allow write: if request.auth != null;
     }
 
+    // Contact Messages: Publicly creatable, but only the Admin can read/delete
+    match /messages/{messageId} {
+      allow create: if true;
+      allow read, update, delete: if request.auth != null;
+    }
+
     // General fallback: Deny everything else by default
     match /{document=**} {
       allow read: if true;
