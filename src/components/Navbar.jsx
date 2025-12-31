@@ -35,7 +35,18 @@ export default function Navbar({ lang, setLang }) {
                         {/* Desktop Nav Links */}
                         <div className="hidden md:flex items-center gap-6">
                             <Link to="/" className="font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">{t.home}</Link>
-                            <a href="#about" className="font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">{t.about}</a>
+                            <Link
+                                to="/"
+                                onClick={(e) => {
+                                    if (window.location.pathname.endsWith('/')) {
+                                        e.preventDefault();
+                                        document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
+                                    }
+                                }}
+                                className="font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors"
+                            >
+                                {t.about}
+                            </Link>
                             <Link to="/blog" className="font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">{t.blog}</Link>
                             <Link to="/contact" className="font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">{t.contact}</Link>
                             <div className="h-4 w-px bg-gray-200 dark:bg-gray-700 mx-2"></div>

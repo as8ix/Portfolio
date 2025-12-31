@@ -75,7 +75,7 @@ export default function VideoCompressor({ file, onCompressed, onCancel }) {
             const fileData = await fetchFile(file);
             await ffmpeg.writeFile(inputName, fileData);
 
-            await ffmpeg.exec([
+            const ret = await ffmpeg.exec([
                 '-y',
                 '-i', inputName,
                 '-c:v', 'libx264',
@@ -87,6 +87,8 @@ export default function VideoCompressor({ file, onCompressed, onCancel }) {
                 '-movflags', '+faststart',
                 outputName
             ]);
+
+            if (ret !== 0) throw new Error(`FFmpeg error code: ${ret}`);
 
             const data = await ffmpeg.readFile(outputName);
             if (data.byteLength === 0) {

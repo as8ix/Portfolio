@@ -112,18 +112,6 @@ export default function Home() {
 
                     </div>
 
-                    {/* Direct Buy Me a Coffee Button */}
-                    <div className="mb-12 flex justify-center transform hover:scale-105 transition-transform">
-                        <a href="https://www.buymeacoffee.com/abdallaashm" target="_blank" rel="noopener noreferrer">
-                            <img
-                                src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=abdallaashm&button_colour=5F7FFF&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00"
-                                alt="Buy me a coffee"
-                                className="h-10 md:h-12"
-                                crossOrigin="anonymous"
-                            />
-                        </a>
-                    </div>
-
                     <div className="space-y-4">
                         <p className="text-gray-400 dark:text-gray-600 text-[10px] md:text-sm uppercase tracking-[0.3em]">{t.footer}</p>
                         <div className="flex justify-center gap-8 text-[10px] md:text-xs font-bold uppercase tracking-widest">
