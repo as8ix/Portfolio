@@ -18,7 +18,9 @@ export default function AdminDashboard() {
     const [uploadProgress, setUploadProgress] = useState(0); // Add progress tracking if feasible with XHR
     const [loading, setLoading] = useState(false);
     const [posts, setPosts] = useState([]);
+    const [messages, setMessages] = useState([]);
     const [editingId, setEditingId] = useState(null);
+    const [activeTab, setActiveTab] = useState('posts'); // 'posts' or 'messages'
 
     // Compression State
     const [fileToCompress, setFileToCompress] = useState(null);
@@ -27,7 +29,8 @@ export default function AdminDashboard() {
     const [stats, setStats] = useState({
         visits: 0,
         uniqueVisitors: 0,
-        posts: 0
+        posts: 0,
+        messages: 0
     });
 
     const fetchStats = async () => {
@@ -55,8 +58,21 @@ export default function AdminDashboard() {
         fetchStats(); // Fetch visits too
     };
 
+    const fetchMessages = async () => {
+        try {
+            const querySnapshot = await getDocs(collection(db, "messages"));
+            const messagesList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+                .sort((a, b) => b.createdAt?.seconds - a.createdAt?.seconds);
+            setMessages(messagesList);
+            setStats(prev => ({ ...prev, messages: messagesList.length }));
+        } catch (error) {
+            console.error("Error fetching messages:", error);
+        }
+    };
+
     useEffect(() => {
         fetchPosts();
+        fetchMessages();
     }, []);
 
     const handleLogout = async () => {
@@ -211,6 +227,17 @@ export default function AdminDashboard() {
         }
     };
 
+    const handleDeleteMessage = async (id) => {
+        if (!window.confirm("Delete this message?")) return;
+        try {
+            await deleteDoc(doc(db, "messages", id));
+            fetchMessages();
+        } catch (error) {
+            console.error("Error deleting message: ", error);
+            alert("Error deleting message");
+        }
+    };
+
     const handleEdit = (post) => {
         setTitle(post.title);
         setContent(post.content);
@@ -312,221 +339,283 @@ export default function AdminDashboard() {
                     <div className="premium-card p-10 animate-fade-in-up delay-300">
                         <div className="w-12 h-12 bg-green-600/10 rounded-2xl flex items-center justify-center mb-6">
                             <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l4 4v10a2 2 0 01-2 2z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 2v4a2 2 0 002 2h4" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
                         </div>
-                        <h3 className="text-gray-400 text-xs font-bold uppercase tracking-[0.2em] mb-2">Total Posts</h3>
-                        <p className="text-5xl font-black tracking-tight">{stats.posts}</p>
+                        <h3 className="text-gray-400 text-xs font-bold uppercase tracking-[0.2em] mb-2">Messages</h3>
+                        <p className="text-5xl font-black tracking-tight">{stats.messages}</p>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
-                    {/* Create/Edit Post Form */}
-                    <div className="lg:col-span-3 space-y-8 animate-fade-in-up delay-500">
-                        <div className="glass p-10 rounded-[40px] border dark:border-white/5">
-                            <div className="flex justify-between items-center mb-10">
-                                <h2 className="text-2xl font-black tracking-tight">{editingId ? 'Edit Article' : 'New Article'}</h2>
-                                {editingId && (
-                                    <button onClick={handleCancelEdit} className="text-sm font-bold text-gray-400 hover:text-black dark:hover:text-white transition-colors">
-                                        Discard Changes
-                                    </button>
-                                )}
-                            </div>
+                {/* Tabs */}
+                <div className="flex gap-4 mb-12">
+                    <button
+                        onClick={() => setActiveTab('posts')}
+                        className={`px-8 py-3 rounded-2xl font-bold tracking-widest uppercase text-xs transition-all ${activeTab === 'posts' ? 'bg-blue-600 text-white shadow-xl shadow-blue-600/20' : 'glass text-gray-400 hover:text-black dark:hover:text-white'}`}
+                    >
+                        Articles
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('messages')}
+                        className={`px-8 py-3 rounded-2xl font-bold tracking-widest uppercase text-xs transition-all ${activeTab === 'messages' ? 'bg-blue-600 text-white shadow-xl shadow-blue-600/20' : 'glass text-gray-400 hover:text-black dark:hover:text-white'}`}
+                    >
+                        Messages
+                    </button>
+                </div>
 
-                            <form onSubmit={handleCreateOrUpdatePost} className="space-y-8">
-                                <div className="space-y-2">
-                                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-4">Title</label>
-                                    <input
-                                        type="text"
-                                        value={title}
-                                        onChange={(e) => setTitle(e.target.value)}
-                                        className="w-full px-8 py-4 bg-gray-50 dark:bg-zinc-800/50 border-none rounded-2xl focus:ring-2 focus:ring-blue-600 outline-none dark:text-white font-medium placeholder:text-gray-400 transition-all shadow-inner"
-                                        placeholder="Enter Post Title..."
-                                        required
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-4">Photos & Videos</label>
-
-                                    {/* Upload Area */}
-                                    <div className="relative group">
-                                        <input
-                                            type="file"
-                                            onChange={handleFileChange}
-                                            multiple
-                                            accept="image/*,video/*"
-                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                        />
-                                        <div className="w-full py-8 bg-gray-50 dark:bg-zinc-800/50 border-2 border-dashed border-gray-200 dark:border-zinc-700 rounded-2xl flex flex-col items-center justify-center transition-all group-hover:border-blue-500 group-hover:bg-blue-50/5 dark:group-hover:bg-blue-900/10">
-                                            <div className="w-12 h-12 bg-white dark:bg-zinc-700 rounded-full flex items-center justify-center shadow-lg mb-3">
-                                                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-                                                </svg>
-                                            </div>
-                                            <p className="text-sm font-bold text-gray-500 dark:text-gray-400">Click to add photos or videos</p>
-                                            <p className="text-xs text-gray-400 mt-1">Supports multiple files</p>
-                                        </div>
-                                    </div>
-
-                                    {/* Preview Area */}
-                                    {(mediaFiles.length > 0 || existingMedia.length > 0) && (
-                                        <div className="grid grid-cols-3 gap-4 mt-4">
-                                            {existingMedia.map((item, index) => (
-                                                <div key={`existing-${index}`} className="relative group aspect-square rounded-xl overflow-hidden bg-black/5 dark:bg-zinc-800">
-                                                    {item.type === 'video' ? (
-                                                        <video src={item.url} className="w-full h-full object-cover opacity-60" />
-                                                    ) : (
-                                                        <img src={item.url} alt="preview" className="w-full h-full object-cover" />
-                                                    )}
-                                                    <div className="absolute inset-0 flex items-center justify-center">
-                                                        {item.type === 'video' && <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur flex items-center justify-center"><div className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[8px] border-l-white border-b-[5px] border-b-transparent ml-0.5"></div></div>}
-                                                    </div>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => removeExistingMedia(index)}
-                                                        className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-20"
-                                                    >
-                                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                                                    </button>
-                                                    <div className="absolute bottom-2 left-2 px-2 py-0.5 bg-black/50 backdrop-blur rounded text-[10px] font-bold text-white uppercase">Existing</div>
-                                                </div>
-                                            ))}
-
-                                            {mediaFiles.map((file, index) => (
-                                                <div key={`new-${index}`} className="relative group aspect-square rounded-xl overflow-hidden bg-black/5 dark:bg-zinc-800">
-                                                    {file.type.startsWith('video') ? (
-                                                        <div className="w-full h-full flex items-center justify-center bg-zinc-900 text-gray-500">
-                                                            Video File
-                                                        </div>
-                                                    ) : (
-                                                        <img src={URL.createObjectURL(file)} alt="preview" className="w-full h-full object-cover" />
-                                                    )}
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => removeFile(index)}
-                                                        className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
-                                                    >
-                                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                                                    </button>
-                                                </div>
-                                            ))}
-                                        </div>
+                {activeTab === 'posts' && (
+                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
+                        {/* Create/Edit Post Form */}
+                        <div className="lg:col-span-3 space-y-8 animate-fade-in-up delay-500">
+                            <div className="glass p-10 rounded-[40px] border dark:border-white/5">
+                                <div className="flex justify-between items-center mb-10">
+                                    <h2 className="text-2xl font-black tracking-tight">{editingId ? 'Edit Article' : 'New Article'}</h2>
+                                    {editingId && (
+                                        <button onClick={handleCancelEdit} className="text-sm font-bold text-gray-400 hover:text-black dark:hover:text-white transition-colors">
+                                            Discard Changes
+                                        </button>
                                     )}
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-4">Content</label>
-                                    <textarea
-                                        value={content}
-                                        onChange={(e) => setContent(e.target.value)}
-                                        rows="10"
-                                        className="w-full px-8 py-6 bg-gray-50 dark:bg-zinc-800/50 border-none rounded-[32px] focus:ring-2 focus:ring-blue-600 outline-none dark:text-white font-medium placeholder:text-gray-400 transition-all shadow-inner resize-none"
-                                        placeholder="Write your story here..."
-                                        required
-                                    ></textarea>
-                                </div>
+                                <form onSubmit={handleCreateOrUpdatePost} className="space-y-8">
+                                    <div className="space-y-2">
+                                        <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-4">Title</label>
+                                        <input
+                                            type="text"
+                                            value={title}
+                                            onChange={(e) => setTitle(e.target.value)}
+                                            className="w-full px-8 py-4 bg-gray-50 dark:bg-zinc-800/50 border-none rounded-2xl focus:ring-2 focus:ring-blue-600 outline-none dark:text-white font-medium placeholder:text-gray-400 transition-all shadow-inner"
+                                            placeholder="Enter Post Title..."
+                                            required
+                                        />
+                                    </div>
 
-                                <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className={`w-full py-5 rounded-2xl text-white font-black tracking-widest uppercase text-sm transition-all transform hover:scale-[1.01] active:scale-[0.99] shadow-2xl ${editingId ? 'bg-green-600 shadow-green-600/20' : 'bg-blue-600 shadow-blue-600/20'} `}
-                                >
-                                    {loading ? (
-                                        <div className="flex items-center justify-center gap-3">
-                                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                                            <span>Processing...</span>
-                                        </div>
-                                    ) : (editingId ? 'Update Article' : 'Publish Article')}
-                                </button>
-                            </form>
-                        </div>
-                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-4">Photos & Videos</label>
 
-                    {/* Posts List */}
-                    <div className="lg:col-span-2 space-y-8 animate-fade-in-up delay-700">
-                        <div className="glass p-10 rounded-[40px] border dark:border-white/5 max-h-[900px] overflow-y-auto custom-scrollbar">
-                            <h2 className="text-2xl font-black tracking-tight mb-10">Recent Content</h2>
-                            {posts.length === 0 ? (
-                                <div className="text-center py-20">
-                                    <p className="text-gray-400 font-medium">No articles published yet.</p>
-                                </div>
-                            ) : (
-                                <div className="space-y-6">
-                                    {posts.map(post => (
-                                        <div key={post.id} className="p-4 glass rounded-3xl border border-gray-100 dark:border-white/5 hover:border-blue-600/30 transition-all group relative overflow-hidden">
-
-                                            <div className="flex items-center justify-between gap-4" dir="ltr">
-                                                {/* Actions (Left side now, or keep Right?) */}
-                                                {/* User screenshot showed Actions on Left/Bottom being weird. Let's make it clean: Content Left, Actions/Image Right */}
-
-                                                <div className="flex-1 min-w-0 pr-4">
-                                                    <h3 className="font-bold text-lg leading-tight mb-1 truncate dark:text-white" title={post.title}>{post.title}</h3>
-                                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
-                                                        {new Date(post.createdAt?.seconds * 1000).toLocaleDateString()}
-                                                    </p>
-                                                    <div className="flex items-center gap-2">
-                                                        <button
-                                                            onClick={() => handleDelete(post.id)}
-                                                            className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest bg-red-600/10 text-red-600 hover:bg-red-600 hover:text-white rounded-lg transition-all"
-                                                        >
-                                                            Delete
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleEdit(post)}
-                                                            className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest bg-blue-600/10 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg transition-all"
-                                                        >
-                                                            Edit
-                                                        </button>
-                                                    </div>
+                                        {/* Upload Area */}
+                                        <div className="relative group">
+                                            <input
+                                                type="file"
+                                                onChange={handleFileChange}
+                                                multiple
+                                                accept="image/*,video/*"
+                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                            />
+                                            <div className="w-full py-8 bg-gray-50 dark:bg-zinc-800/50 border-2 border-dashed border-gray-200 dark:border-zinc-700 rounded-2xl flex flex-col items-center justify-center transition-all group-hover:border-blue-500 group-hover:bg-blue-50/5 dark:group-hover:bg-blue-900/10">
+                                                <div className="w-12 h-12 bg-white dark:bg-zinc-700 rounded-full flex items-center justify-center shadow-lg mb-3">
+                                                    <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                                                    </svg>
                                                 </div>
+                                                <p className="text-sm font-bold text-gray-500 dark:text-gray-400">Click to add photos or videos</p>
+                                                <p className="text-xs text-gray-400 mt-1">Supports multiple files</p>
+                                            </div>
+                                        </div>
 
-                                                {/* Thumbnail (Right) */}
-                                                <div className="w-20 h-20 bg-gray-100 dark:bg-zinc-800 rounded-2xl overflow-hidden flex-shrink-0 border border-gray-200 dark:border-white/10 relative">
-                                                    {post.media && post.media.length > 0 ? (
-                                                        post.media[0].type === 'video' ? (
-                                                            <div className="w-full h-full relative">
-                                                                <video src={post.media[0].url} className="w-full h-full object-cover opacity-80" crossOrigin="anonymous" />
-                                                                <div className="absolute inset-0 flex items-center justify-center">
-                                                                    <div className="w-6 h-6 rounded-full bg-white/30 backdrop-blur flex items-center justify-center">
-                                                                        <div className="w-0 h-0 border-t-[3px] border-t-transparent border-l-[6px] border-l-white border-b-[3px] border-b-transparent ml-0.5"></div>
-                                                                    </div>
-                                                                </div>
+                                        {/* Preview Area */}
+                                        {(mediaFiles.length > 0 || existingMedia.length > 0) && (
+                                            <div className="grid grid-cols-3 gap-4 mt-4">
+                                                {existingMedia.map((item, index) => (
+                                                    <div key={`existing-${index}`} className="relative group aspect-square rounded-xl overflow-hidden bg-black/5 dark:bg-zinc-800">
+                                                        {item.type === 'video' ? (
+                                                            <video src={item.url} className="w-full h-full object-cover opacity-60" />
+                                                        ) : (
+                                                            <img src={item.url} alt="preview" className="w-full h-full object-cover" />
+                                                        )}
+                                                        <div className="absolute inset-0 flex items-center justify-center">
+                                                            {item.type === 'video' && <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur flex items-center justify-center"><div className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[8px] border-l-white border-b-[5px] border-b-transparent ml-0.5"></div></div>}
+                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => removeExistingMedia(index)}
+                                                            className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-20"
+                                                        >
+                                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                                        </button>
+                                                        <div className="absolute bottom-2 left-2 px-2 py-0.5 bg-black/50 backdrop-blur rounded text-[10px] font-bold text-white uppercase">Existing</div>
+                                                    </div>
+                                                ))}
+
+                                                {mediaFiles.map((file, index) => (
+                                                    <div key={`new-${index}`} className="relative group aspect-square rounded-xl overflow-hidden bg-black/5 dark:bg-zinc-800">
+                                                        {file.type.startsWith('video') ? (
+                                                            <div className="w-full h-full flex items-center justify-center bg-zinc-900 text-gray-500">
+                                                                Video File
                                                             </div>
                                                         ) : (
+                                                            <img src={URL.createObjectURL(file)} alt="preview" className="w-full h-full object-cover" />
+                                                        )}
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => removeFile(index)}
+                                                            className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
+                                                        >
+                                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-4">Content</label>
+                                        <textarea
+                                            value={content}
+                                            onChange={(e) => setContent(e.target.value)}
+                                            rows="10"
+                                            className="w-full px-8 py-6 bg-gray-50 dark:bg-zinc-800/50 border-none rounded-[32px] focus:ring-2 focus:ring-blue-600 outline-none dark:text-white font-medium placeholder:text-gray-400 transition-all shadow-inner resize-none"
+                                            placeholder="Write your story here..."
+                                            required
+                                        ></textarea>
+                                    </div>
+
+                                    <button
+                                        type="submit"
+                                        disabled={loading}
+                                        className={`w-full py-5 rounded-2xl text-white font-black tracking-widest uppercase text-sm transition-all transform hover:scale-[1.01] active:scale-[0.99] shadow-2xl ${editingId ? 'bg-green-600 shadow-green-600/20' : 'bg-blue-600 shadow-blue-600/20'} `}
+                                    >
+                                        {loading ? (
+                                            <div className="flex items-center justify-center gap-3">
+                                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                                <span>Processing...</span>
+                                            </div>
+                                        ) : (editingId ? 'Update Article' : 'Publish Article')}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        {/* Posts List */}
+                        <div className="lg:col-span-2 space-y-8 animate-fade-in-up delay-700">
+                            <div className="glass p-10 rounded-[40px] border dark:border-white/5 max-h-[900px] overflow-y-auto custom-scrollbar">
+                                <h2 className="text-2xl font-black tracking-tight mb-10">Recent Content</h2>
+                                {posts.length === 0 ? (
+                                    <div className="text-center py-20">
+                                        <p className="text-gray-400 font-medium">No articles published yet.</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-6">
+                                        {posts.map(post => (
+                                            <div key={post.id} className="p-4 glass rounded-3xl border border-gray-100 dark:border-white/5 hover:border-blue-600/30 transition-all group relative overflow-hidden">
+
+                                                <div className="flex items-center justify-between gap-4" dir="ltr">
+                                                    {/* Actions (Left side now, or keep Right?) */}
+                                                    {/* User screenshot showed Actions on Left/Bottom being weird. Let's make it clean: Content Left, Actions/Image Right */}
+
+                                                    <div className="flex-1 min-w-0 pr-4">
+                                                        <h3 className="font-bold text-lg leading-tight mb-1 truncate dark:text-white" title={post.title}>{post.title}</h3>
+                                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
+                                                            {new Date(post.createdAt?.seconds * 1000).toLocaleDateString()}
+                                                        </p>
+                                                        <div className="flex items-center gap-2">
+                                                            <button
+                                                                onClick={() => handleDelete(post.id)}
+                                                                className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest bg-red-600/10 text-red-600 hover:bg-red-600 hover:text-white rounded-lg transition-all"
+                                                            >
+                                                                Delete
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleEdit(post)}
+                                                                className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest bg-blue-600/10 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg transition-all"
+                                                            >
+                                                                Edit
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Thumbnail (Right) */}
+                                                    <div className="w-20 h-20 bg-gray-100 dark:bg-zinc-800 rounded-2xl overflow-hidden flex-shrink-0 border border-gray-200 dark:border-white/10 relative">
+                                                        {post.media && post.media.length > 0 ? (
+                                                            post.media[0].type === 'video' ? (
+                                                                <div className="w-full h-full relative">
+                                                                    <video src={post.media[0].url} className="w-full h-full object-cover opacity-80" crossOrigin="anonymous" />
+                                                                    <div className="absolute inset-0 flex items-center justify-center">
+                                                                        <div className="w-6 h-6 rounded-full bg-white/30 backdrop-blur flex items-center justify-center">
+                                                                            <div className="w-0 h-0 border-t-[3px] border-t-transparent border-l-[6px] border-l-white border-b-[3px] border-b-transparent ml-0.5"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <img
+                                                                    src={post.media[0].url}
+                                                                    alt={post.title}
+                                                                    className="w-full h-full object-cover"
+                                                                    crossOrigin="anonymous"
+                                                                    onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.classList.add('bg-gray-800'); }}
+                                                                />
+                                                            )
+                                                        ) : post.image ? (
                                                             <img
-                                                                src={post.media[0].url}
+                                                                src={post.image}
                                                                 alt={post.title}
                                                                 className="w-full h-full object-cover"
                                                                 crossOrigin="anonymous"
-                                                                onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.classList.add('bg-gray-800'); }}
+                                                                onError={(e) => { e.target.style.display = 'none'; }}
                                                             />
-                                                        )
-                                                    ) : post.image ? (
-                                                        <img
-                                                            src={post.image}
-                                                            alt={post.title}
-                                                            className="w-full h-full object-cover"
-                                                            crossOrigin="anonymous"
-                                                            onError={(e) => { e.target.style.display = 'none'; }}
-                                                        />
-                                                    ) : (
-                                                        <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-zinc-800 text-gray-300">
-                                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                            </svg>
-                                                        </div>
-                                                    )}
+                                                        ) : (
+                                                            <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-zinc-800 text-gray-300">
+                                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                                </svg>
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'messages' && (
+                    /* Messages Tab Content */
+                    <div className="space-y-8 animate-fade-in-up">
+                        <div className="glass p-10 rounded-[40px] border dark:border-white/5">
+                            <div className="flex justify-between items-center mb-10">
+                                <h2 className="text-2xl font-black tracking-tight">Inbox</h2>
+                                <button onClick={fetchMessages} className="text-sm font-bold text-blue-600">Refresh</button>
+                            </div>
+
+                            {messages.length === 0 ? (
+                                <div className="text-center py-20">
+                                    <p className="text-gray-400 font-medium">Your inbox is empty.</p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {messages.map(msg => (
+                                        <div key={msg.id} className="p-8 glass rounded-3xl border border-gray-100 dark:border-white/5 hover:border-blue-600/30 transition-all group relative">
+                                            <div className="flex justify-between items-start mb-6">
+                                                <div>
+                                                    <h3 className="font-bold text-xl mb-1">{msg.user_name}</h3>
+                                                    <p className="text-sm text-blue-600 font-medium">{msg.user_email}</p>
+                                                </div>
+                                                <button
+                                                    onClick={() => handleDeleteMessage(msg.id)}
+                                                    className="p-2 text-gray-300 hover:text-red-600 transition-colors"
+                                                >
+                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <div className="bg-gray-50 dark:bg-zinc-800/50 p-6 rounded-2xl mb-4">
+                                                <p className="text-gray-600 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">{msg.message}</p>
+                                            </div>
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                                {msg.createdAt?.seconds ? new Date(msg.createdAt.seconds * 1000).toLocaleString() : 'Just now'}
+                                            </p>
                                         </div>
                                     ))}
                                 </div>
                             )}
                         </div>
                     </div>
-                </div>
+                )}
             </div>
             {/* In-App Compressor */}
             {fileToCompress && (
