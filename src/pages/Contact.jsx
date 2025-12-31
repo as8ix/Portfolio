@@ -16,22 +16,32 @@ export default function Contact() {
 
     const sendEmail = (e) => {
         e.preventDefault();
+
+        // Simple Honeypot check
+        if (e.target.bot_field.value) {
+            console.warn("Bot detected.");
+            return;
+        }
+
         setLoading(true);
         setStatus(null);
 
-        // Note: You need to set these up in EmailJS dashboard
-        // I will use placeholders for now, but user can update them in .env
-        const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_placeholder';
-        const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_placeholder';
-        const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'public_key_placeholder';
+        const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+        const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+        const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+        if (!serviceId || !templateId || !publicKey) {
+            console.error("EmailJS keys are missing in .env");
+            setStatus('error');
+            setLoading(false);
+            return;
+        }
 
         emailjs.sendForm(serviceId, templateId, form.current, publicKey)
             .then((result) => {
-                console.log(result.text);
                 setStatus('success');
                 form.current.reset();
             }, (error) => {
-                console.log(error.text);
                 setStatus('error');
             })
             .finally(() => {
@@ -61,6 +71,9 @@ export default function Contact() {
                     {/* Contact Form Section */}
                     <div className="premium-card p-10 md:p-12 animate-fade-in-up delay-200">
                         <form ref={form} onSubmit={sendEmail} className="space-y-8">
+                            {/* Honeypot */}
+                            <input type="text" name="bot_field" style={{ display: 'none' }} />
+
                             <div className="space-y-2">
                                 <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-4">{cp.name}</label>
                                 <input

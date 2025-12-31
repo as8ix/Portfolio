@@ -119,7 +119,19 @@ export default function Navbar({ lang, setLang }) {
             {isMenuOpen && (
                 <div className="md:hidden bg-white dark:bg-[#0a0a0a] border-b border-gray-100 dark:border-white/10 p-4 space-y-4">
                     <Link to="/" onClick={() => setIsMenuOpen(false)} className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">{t.home}</Link>
-                    <a href="#about" onClick={() => setIsMenuOpen(false)} className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">{t.about}</a>
+                    <Link
+                        to="/"
+                        onClick={(e) => {
+                            setIsMenuOpen(false);
+                            if (window.location.pathname.endsWith('/') || window.location.pathname.endsWith('/Portfolio/')) {
+                                e.preventDefault();
+                                document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
+                            }
+                        }}
+                        className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white"
+                    >
+                        {t.about}
+                    </Link>
                     <Link to="/blog" onClick={() => setIsMenuOpen(false)} className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">{t.blog}</Link>
                     <Link to="/contact" onClick={() => setIsMenuOpen(false)} className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">{t.contact}</Link>
                     <Link to="/login" onClick={() => setIsMenuOpen(false)} className="block py-2 font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">Login</Link>

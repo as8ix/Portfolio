@@ -14,6 +14,7 @@ import VerifyOTP from './pages/VerifyOTP';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import Contact from './pages/Contact';
+import ErrorBoundary from './components/ErrorBoundary';
 
 const AuthContext = createContext();
 
@@ -61,28 +62,30 @@ function App() {
 
   return (
     <ThemeProvider>
-      <AuthContext.Provider value={{ user, loading, isMfaVerified, setIsMfaVerified, lang, setLang }}>
-        <BrowserRouter basename="/Portfolio">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/blog/:id" element={<BlogDetail />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/verify-otp" element={<VerifyOTP />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route
-              path="/admin"
-              element={
-                <RequireAuth>
-                  <AdminDashboard />
-                </RequireAuth>
-              }
-            />
-          </Routes>
-        </BrowserRouter>
-      </AuthContext.Provider>
+      <ErrorBoundary>
+        <AuthContext.Provider value={{ user, loading, isMfaVerified, setIsMfaVerified, lang, setLang }}>
+          <BrowserRouter basename="/Portfolio">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:id" element={<BlogDetail />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/verify-otp" element={<VerifyOTP />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route
+                path="/admin"
+                element={
+                  <RequireAuth>
+                    <AdminDashboard />
+                  </RequireAuth>
+                }
+              />
+            </Routes>
+          </BrowserRouter>
+        </AuthContext.Provider>
+      </ErrorBoundary>
     </ThemeProvider>
   );
 }

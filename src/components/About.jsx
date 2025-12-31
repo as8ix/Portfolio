@@ -6,7 +6,7 @@ export default function About({ lang }) {
     const [revealRef, isVisible] = useScrollReveal({ threshold: 0.3 });
 
     return (
-        <section className="py-32 px-6 md:px-20 bg-white dark:bg-[#060606] relative overflow-hidden">
+        <section id="about" className="py-32 px-6 md:px-20 bg-white dark:bg-[#060606] relative overflow-hidden">
             {/* Background Accent */}
             <div className="rich-glow w-[400px] h-[400px] bg-blue-600/5 -top-20 -left-20 animate-float"></div>
 

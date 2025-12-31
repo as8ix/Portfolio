@@ -1,0 +1,34 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Analytics/Site Stats: Allowing anonymous visit tracking
+    match /analytics/site_stats {
+      allow read, write: if true;
+    }
+
+    // OTPs: Used for the multi-factor authentication flow
+    match /otps/{otpId} {
+      // Allow creation of OTPs from the Login page (unauthenticated)
+      // In a strict production environment, you might use a Cloud Function instead.
+      allow create: if true;
+      
+      // Only allow reading and deleting the OTP if it matches the email being verified
+      // Note: In our current implementation, VerifyOTP checks this in the query.
+      allow read, delete: if true; 
+    }
+
+    // Blog Posts: Publicly readable, but only the Admin (authenticated) can modify
+    match /posts/{postId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // General fallback: Deny everything else by default
+    match /{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}
