@@ -13,6 +13,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import VerifyOTP from './pages/VerifyOTP';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
+import Contact from './pages/Contact';
 
 const AuthContext = createContext();
 
@@ -70,6 +71,7 @@ function App() {
             <Route path="/verify-otp" element={<VerifyOTP />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
+            <Route path="/contact" element={<Contact />} />
             <Route
               path="/admin"
               element={

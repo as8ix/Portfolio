@@ -6,8 +6,13 @@ import useScrollReveal from '../hooks/useScrollReveal';
 import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 
+import MediaGrid from '../components/MediaGrid';
+
 function BlogCard({ post, index, lang }) {
     const [revealRef, isVisible] = useScrollReveal({ threshold: 0.2 });
+
+    // Normalize media
+    const media = post.media || (post.image ? [{ url: post.image, type: 'image' }] : []);
 
     return (
         <Link
@@ -19,16 +24,13 @@ function BlogCard({ post, index, lang }) {
         >
             <article className={`premium-card h-full flex flex-col transition-all duration-700 ${isVisible ? 'grayscale-0' : 'grayscale'
                 } group-hover:border-blue-600/30`}>
-                {post.image && (
-                    <div className="aspect-[16/10] overflow-hidden rounded-t-[38px] relative">
-                        <img
-                            src={post.image}
-                            alt={post.title}
-                            className={`w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-110`}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                {media.length > 0 && (
+                    <div className="rounded-t-[38px] overflow-hidden">
+                        <MediaGrid media={media} />
                     </div>
                 )}
+
                 <div className="p-8 flex flex-col flex-1">
                     <div className="flex items-center gap-3 mb-4">
                         <span className="h-px w-8 bg-blue-600/30"></span>

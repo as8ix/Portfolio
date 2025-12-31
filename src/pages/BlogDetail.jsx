@@ -1,6 +1,8 @@
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../App';
 import Navbar from '../components/Navbar';
+import MediaGrid from '../components/MediaGrid';
 import { db } from '../firebase';
 import { doc, getDoc, updateDoc, increment } from 'firebase/firestore';
 
@@ -53,6 +55,8 @@ export default function BlogDetail() {
         );
     }
 
+    const media = post ? (post.media || (post.image ? [{ url: post.image, type: 'image' }] : [])) : [];
+
     return (
         <div className={`min-h-screen ${lang === 'ar' ? 'font-arabic' : 'font-english'} bg-white dark:bg-[#060606] text-black dark:text-white selection:bg-black selection:text-white pt-20 transition-colors duration-500 overflow-hidden relative`}>
             {/* Background Glows */}
@@ -93,13 +97,9 @@ export default function BlogDetail() {
                     </div>
                 </header>
 
-                {post.image && (
-                    <div className="mb-20 rounded-[48px] overflow-hidden shadow-2xl border-8 border-white dark:border-zinc-900 rotate-1 animate-fade-in-up delay-100">
-                        <img
-                            src={post.image}
-                            alt={post.title}
-                            className="w-full h-auto object-cover max-h-[700px] grayscale hover:grayscale-0 transition-all duration-700"
-                        />
+                {media.length > 0 && (
+                    <div className="mb-20 rounded-[48px] overflow-hidden shadow-2xl border-8 border-white dark:border-zinc-900 animate-fade-in-up delay-100">
+                        <MediaGrid media={media} />
                     </div>
                 )}
 

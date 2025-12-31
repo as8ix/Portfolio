@@ -4,6 +4,8 @@ import { useAuth } from '../App';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import About from '../components/About';
+import FloatingCoffee from '../components/FloatingCoffee';
+import MediaLightbox from '../components/MediaLightbox';
 import Traits from '../components/Traits';
 import { content } from '../data/content';
 import { db } from '../firebase';
@@ -117,6 +119,7 @@ export default function Home() {
                                 src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=abdallaashm&button_colour=5F7FFF&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00"
                                 alt="Buy me a coffee"
                                 className="h-10 md:h-12"
+                                crossOrigin="anonymous"
                             />
                         </a>
                     </div>
@@ -130,6 +133,7 @@ export default function Home() {
                     </div>
                 </div>
             </footer>
+            <FloatingCoffee lang={lang} />
         </div>
     );
 }

@@ -3,6 +3,7 @@ export const content = {
         name: "عبدالله عبدالعزيز أشير",
         birth: "مواليد 2006، من الصومال",
         education: "شهادة الثانوية العامة من المملكة العربية السعودية",
+        bio: "أنا مصمم ويب ومصور أهتم بدمج الانضباط والفضول التقني لخلق أعمال مفيدة وموثوقة. أبحث دائماً عن العمق في العمل مع الحفاظ على البساطة والوضوح.",
         heroTitle: "مصمم ويب & مصور",
         heroSubtitle: "اسمي عبدالله وأنا فريلانسر",
         aboutTitle: "عني",
@@ -47,12 +48,27 @@ export const content = {
         privacyLinks: {
             privacy: "سياسة الخصوصية",
             terms: "شروط الخدمة"
+        },
+        contactPage: {
+            title: "تواصل معي",
+            subtitle: "لديك مشروع في بالك؟ دعنا نتحدث.",
+            name: "الاسم",
+            email: "البريد الإلكتروني",
+            message: "الرسالة",
+            send: "إرسال الرسالة",
+            success: "تم الإرسال بنجاح!",
+            error: "حدث خطأ ما، يرجى المحاولة لاحقاً.",
+            infoTitle: "معلومات التواصل",
+            phone: "الجوال",
+            location: "الموقع",
+            locationVal: "المملكة العربية السعودية، جدة"
         }
     },
     en: {
         name: "Abdalla Abdiaziz Ashir",
         birth: "Born in 2006, from Somalia",
         education: "High School Certificate from Saudi Arabia",
+        bio: "I am a web designer and photographer who blends discipline, faith, and technical curiosity to create useful and trustworthy work. I seek depth in every project while avoiding unnecessary complexity.",
         heroTitle: "Web Designer & Photographer",
         heroSubtitle: "My name is Abdalla and I am a freelance",
         aboutTitle: "About Me",
@@ -97,6 +113,20 @@ export const content = {
         privacyLinks: {
             privacy: "Privacy Policy",
             terms: "Terms of Service"
+        },
+        contactPage: {
+            title: "Contact Me",
+            subtitle: "Have a project in mind? Let's talk.",
+            name: "Name",
+            email: "Email",
+            message: "Message",
+            send: "Send Message",
+            success: "Sent successfully!",
+            error: "Something went wrong, please try again.",
+            infoTitle: "Contact Info",
+            phone: "Phone",
+            location: "Location",
+            locationVal: "Saudi Arabia, Jeddah"
         }
     }
 };

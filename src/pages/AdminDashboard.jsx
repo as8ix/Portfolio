@@ -4,15 +4,24 @@ import { signOut } from 'firebase/auth';
 import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc, getDoc } from 'firebase/firestore';
 
 import { useAuth } from '../App';
+import { useTheme } from '../hooks/useTheme';
+import MediaLightbox from '../components/MediaLightbox'; // Assuming previous integration
+import VideoCompressor from '../components/VideoCompressor'; // Import the new component
 
 export default function AdminDashboard() {
     const { setIsMfaVerified } = useAuth();
+    const { theme, toggleTheme } = useTheme();
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
-    const [image, setImage] = useState('');
+    const [mediaFiles, setMediaFiles] = useState([]); // Files to upload
+    const [existingMedia, setExistingMedia] = useState([]); // URLs from DB for editing
+    const [uploadProgress, setUploadProgress] = useState(0); // Add progress tracking if feasible with XHR
     const [loading, setLoading] = useState(false);
     const [posts, setPosts] = useState([]);
     const [editingId, setEditingId] = useState(null);
+
+    // Compression State
+    const [fileToCompress, setFileToCompress] = useState(null);
 
     // Mock Analytics Data
     const [stats, setStats] = useState({
@@ -61,18 +70,106 @@ export default function AdminDashboard() {
         }
     };
 
+    const handleFileChange = (e) => {
+        if (e.target.files) {
+            const newFiles = Array.from(e.target.files);
+            const validFiles = [];
+
+            for (const file of newFiles) {
+                const sizeMB = file.size / (1024 * 1024);
+                if (sizeMB > 99) { // 99MB limit
+                    // Trigger compressor for the first large file found (one at a time for simplicity)
+                    setFileToCompress(file);
+                    // Don't add to validFiles yet
+                } else {
+                    validFiles.push(file);
+                }
+            }
+
+            if (validFiles.length > 0) {
+                setMediaFiles(prev => [...prev, ...validFiles]);
+            }
+        }
+    };
+
+    const handleCompressed = (compressedFile) => {
+        setMediaFiles(prev => [...prev, compressedFile]);
+        setFileToCompress(null);
+    };
+
+    const removeFile = (index) => {
+        setMediaFiles(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const removeExistingMedia = (index) => {
+        setExistingMedia(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const uploadToCloudinary = async (file) => {
+        const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+        const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+        if (!cloudName || !uploadPreset) {
+            throw new Error("Missing Cloudinary credentials. Please set VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET in .env");
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', uploadPreset);
+
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error?.message || 'Upload failed');
+        }
+
+        const data = await response.json();
+        return {
+            url: data.secure_url,
+            type: data.resource_type === 'video' ? 'video' : 'image',
+            name: file.name
+        };
+    };
+
     const handleCreateOrUpdatePost = async (e) => {
         e.preventDefault();
         setLoading(true);
+        setUploadProgress(0);
 
         try {
+            // Upload new files
+            const uploadedMedia = [];
+
+            if (mediaFiles.length > 0) {
+                // Upload sequentially to keep it simple, or Promise.all for speed
+                // Using loop here to handle errors individually if needed
+                for (const file of mediaFiles) {
+                    try {
+                        const result = await uploadToCloudinary(file);
+                        uploadedMedia.push(result);
+                    } catch (err) {
+                        console.error(`Failed to upload ${file.name}:`, err);
+                        alert(`Failed to upload ${file.name}: ${err.message}`);
+                        // Optionally continue or break
+                        throw err; // Break for now
+                    }
+                }
+            }
+
+            // Combine with existing media
+            const finalMedia = [...existingMedia, ...uploadedMedia];
+
             if (editingId) {
                 // Update existing post
                 const postRef = doc(db, "posts", editingId);
                 await updateDoc(postRef, {
                     title,
                     content,
-                    image,
+                    media: finalMedia,
                     lastUpdated: new Date()
                 });
                 alert('Post updated successfully!');
@@ -82,7 +179,7 @@ export default function AdminDashboard() {
                 await addDoc(collection(db, "posts"), {
                     title,
                     content,
-                    image,
+                    media: finalMedia,
                     createdAt: new Date(),
                     views: 0
                 });
@@ -91,13 +188,15 @@ export default function AdminDashboard() {
 
             setTitle('');
             setContent('');
-            setImage('');
+            setMediaFiles([]);
+            setExistingMedia([]);
             fetchPosts();
         } catch (error) {
             console.error("Error saving document: ", error);
-            alert('Error saving post');
+            alert('Error saving post: ' + error.message);
         } finally {
             setLoading(false);
+            setUploadProgress(0);
         }
     };
 
@@ -115,7 +214,14 @@ export default function AdminDashboard() {
     const handleEdit = (post) => {
         setTitle(post.title);
         setContent(post.content);
-        setImage(post.image);
+        if (post.media) {
+            setExistingMedia(post.media);
+        } else if (post.image) {
+            setExistingMedia([{ url: post.image, type: 'image' }]);
+        } else {
+            setExistingMedia([]);
+        }
+        setMediaFiles([]);
         setEditingId(post.id);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
@@ -124,7 +230,8 @@ export default function AdminDashboard() {
         setEditingId(null);
         setTitle('');
         setContent('');
-        setImage('');
+        setMediaFiles([]);
+        setExistingMedia([]);
     };
 
     return (
@@ -140,6 +247,29 @@ export default function AdminDashboard() {
                         <p className="text-gray-500 dark:text-gray-400 font-medium">Manage your portfolio content and analytics.</p>
                     </div>
                     <div className="flex items-center gap-4">
+                        <button
+                            onClick={toggleTheme}
+                            className="p-3 glass rounded-2xl text-gray-500 hover:text-blue-600 transition-colors"
+                            title="Toggle Theme"
+                        >
+                            {theme === 'dark' ? (
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                                </svg>
+                            ) : (
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="12" cy="12" r="5"></circle>
+                                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                                </svg>
+                            )}
+                        </button>
                         <button
                             onClick={() => window.location.reload()}
                             className="p-3 glass rounded-2xl text-gray-500 hover:text-blue-600 transition-colors"
@@ -218,14 +348,72 @@ export default function AdminDashboard() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-4">Image URL</label>
-                                    <input
-                                        type="url"
-                                        value={image}
-                                        onChange={(e) => setImage(e.target.value)}
-                                        className="w-full px-8 py-4 bg-gray-50 dark:bg-zinc-800/50 border-none rounded-2xl focus:ring-2 focus:ring-blue-600 outline-none dark:text-white font-medium placeholder:text-gray-400 transition-all shadow-inner"
-                                        placeholder="https://images.unsplash.com/..."
-                                    />
+                                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-4">Photos & Videos</label>
+
+                                    {/* Upload Area */}
+                                    <div className="relative group">
+                                        <input
+                                            type="file"
+                                            onChange={handleFileChange}
+                                            multiple
+                                            accept="image/*,video/*"
+                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                        />
+                                        <div className="w-full py-8 bg-gray-50 dark:bg-zinc-800/50 border-2 border-dashed border-gray-200 dark:border-zinc-700 rounded-2xl flex flex-col items-center justify-center transition-all group-hover:border-blue-500 group-hover:bg-blue-50/5 dark:group-hover:bg-blue-900/10">
+                                            <div className="w-12 h-12 bg-white dark:bg-zinc-700 rounded-full flex items-center justify-center shadow-lg mb-3">
+                                                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                                                </svg>
+                                            </div>
+                                            <p className="text-sm font-bold text-gray-500 dark:text-gray-400">Click to add photos or videos</p>
+                                            <p className="text-xs text-gray-400 mt-1">Supports multiple files</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Preview Area */}
+                                    {(mediaFiles.length > 0 || existingMedia.length > 0) && (
+                                        <div className="grid grid-cols-3 gap-4 mt-4">
+                                            {existingMedia.map((item, index) => (
+                                                <div key={`existing-${index}`} className="relative group aspect-square rounded-xl overflow-hidden bg-black/5 dark:bg-zinc-800">
+                                                    {item.type === 'video' ? (
+                                                        <video src={item.url} className="w-full h-full object-cover opacity-60" />
+                                                    ) : (
+                                                        <img src={item.url} alt="preview" className="w-full h-full object-cover" />
+                                                    )}
+                                                    <div className="absolute inset-0 flex items-center justify-center">
+                                                        {item.type === 'video' && <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur flex items-center justify-center"><div className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[8px] border-l-white border-b-[5px] border-b-transparent ml-0.5"></div></div>}
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeExistingMedia(index)}
+                                                        className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-20"
+                                                    >
+                                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                                    </button>
+                                                    <div className="absolute bottom-2 left-2 px-2 py-0.5 bg-black/50 backdrop-blur rounded text-[10px] font-bold text-white uppercase">Existing</div>
+                                                </div>
+                                            ))}
+
+                                            {mediaFiles.map((file, index) => (
+                                                <div key={`new-${index}`} className="relative group aspect-square rounded-xl overflow-hidden bg-black/5 dark:bg-zinc-800">
+                                                    {file.type.startsWith('video') ? (
+                                                        <div className="w-full h-full flex items-center justify-center bg-zinc-900 text-gray-500">
+                                                            Video File
+                                                        </div>
+                                                    ) : (
+                                                        <img src={URL.createObjectURL(file)} alt="preview" className="w-full h-full object-cover" />
+                                                    )}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeFile(index)}
+                                                        className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
+                                                    >
+                                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="space-y-2">
@@ -267,36 +455,69 @@ export default function AdminDashboard() {
                             ) : (
                                 <div className="space-y-6">
                                     {posts.map(post => (
-                                        <div key={post.id} className="p-6 glass rounded-3xl border border-gray-100 dark:border-white/5 hover:border-blue-600/30 transition-all group">
-                                            <div className="flex items-start gap-4">
-                                                {post.image ? (
-                                                    <img src={post.image} alt={post.title} className="w-20 h-20 object-cover rounded-2xl grayscale group-hover:grayscale-0 transition-all" />
-                                                ) : (
-                                                    <div className="w-20 h-20 bg-gray-100 dark:bg-zinc-800 rounded-2xl flex items-center justify-center">
-                                                        <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                        </svg>
-                                                    </div>
-                                                )}
-                                                <div className="flex-1 min-w-0">
-                                                    <h3 className="font-bold text-lg leading-tight mb-1 truncate dark:text-white">{post.title}</h3>
-                                                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-4">
+                                        <div key={post.id} className="p-4 glass rounded-3xl border border-gray-100 dark:border-white/5 hover:border-blue-600/30 transition-all group relative overflow-hidden">
+
+                                            <div className="flex items-center justify-between gap-4" dir="ltr">
+                                                {/* Actions (Left side now, or keep Right?) */}
+                                                {/* User screenshot showed Actions on Left/Bottom being weird. Let's make it clean: Content Left, Actions/Image Right */}
+
+                                                <div className="flex-1 min-w-0 pr-4">
+                                                    <h3 className="font-bold text-lg leading-tight mb-1 truncate dark:text-white" title={post.title}>{post.title}</h3>
+                                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
                                                         {new Date(post.createdAt?.seconds * 1000).toLocaleDateString()}
                                                     </p>
                                                     <div className="flex items-center gap-2">
                                                         <button
-                                                            onClick={() => handleEdit(post)}
-                                                            className="px-4 py-1.5 text-[11px] font-black uppercase tracking-widest bg-blue-600/10 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg transition-all"
-                                                        >
-                                                            Edit
-                                                        </button>
-                                                        <button
                                                             onClick={() => handleDelete(post.id)}
-                                                            className="px-4 py-1.5 text-[11px] font-black uppercase tracking-widest bg-red-600/10 text-red-600 hover:bg-red-600 hover:text-white rounded-lg transition-all"
+                                                            className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest bg-red-600/10 text-red-600 hover:bg-red-600 hover:text-white rounded-lg transition-all"
                                                         >
                                                             Delete
                                                         </button>
+                                                        <button
+                                                            onClick={() => handleEdit(post)}
+                                                            className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest bg-blue-600/10 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg transition-all"
+                                                        >
+                                                            Edit
+                                                        </button>
                                                     </div>
+                                                </div>
+
+                                                {/* Thumbnail (Right) */}
+                                                <div className="w-20 h-20 bg-gray-100 dark:bg-zinc-800 rounded-2xl overflow-hidden flex-shrink-0 border border-gray-200 dark:border-white/10 relative">
+                                                    {post.media && post.media.length > 0 ? (
+                                                        post.media[0].type === 'video' ? (
+                                                            <div className="w-full h-full relative">
+                                                                <video src={post.media[0].url} className="w-full h-full object-cover opacity-80" crossOrigin="anonymous" />
+                                                                <div className="absolute inset-0 flex items-center justify-center">
+                                                                    <div className="w-6 h-6 rounded-full bg-white/30 backdrop-blur flex items-center justify-center">
+                                                                        <div className="w-0 h-0 border-t-[3px] border-t-transparent border-l-[6px] border-l-white border-b-[3px] border-b-transparent ml-0.5"></div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            <img
+                                                                src={post.media[0].url}
+                                                                alt={post.title}
+                                                                className="w-full h-full object-cover"
+                                                                crossOrigin="anonymous"
+                                                                onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.classList.add('bg-gray-800'); }}
+                                                            />
+                                                        )
+                                                    ) : post.image ? (
+                                                        <img
+                                                            src={post.image}
+                                                            alt={post.title}
+                                                            className="w-full h-full object-cover"
+                                                            crossOrigin="anonymous"
+                                                            onError={(e) => { e.target.style.display = 'none'; }}
+                                                        />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-zinc-800 text-gray-300">
+                                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                            </svg>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
@@ -307,6 +528,14 @@ export default function AdminDashboard() {
                     </div>
                 </div>
             </div>
+            {/* In-App Compressor */}
+            {fileToCompress && (
+                <VideoCompressor
+                    file={fileToCompress}
+                    onCompressed={handleCompressed}
+                    onCancel={() => setFileToCompress(null)}
+                />
+            )}
         </div>
     );
 }

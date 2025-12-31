@@ -37,7 +37,7 @@ export default function Navbar({ lang, setLang }) {
                             <Link to="/" className="font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">{t.home}</Link>
                             <a href="#about" className="font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">{t.about}</a>
                             <Link to="/blog" className="font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">{t.blog}</Link>
-                            <a href="#contact" className="font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">{t.contact}</a>
+                            <Link to="/contact" className="font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">{t.contact}</Link>
                             <div className="h-4 w-px bg-gray-200 dark:bg-gray-700 mx-2"></div>
                             <Link to="/login" className="font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors">Login</Link>
                         </div>
@@ -110,7 +110,7 @@ export default function Navbar({ lang, setLang }) {
                     <Link to="/" onClick={() => setIsMenuOpen(false)} className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">{t.home}</Link>
                     <a href="#about" onClick={() => setIsMenuOpen(false)} className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">{t.about}</a>
                     <Link to="/blog" onClick={() => setIsMenuOpen(false)} className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">{t.blog}</Link>
-                    <a href="#contact" onClick={() => setIsMenuOpen(false)} className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">{t.contact}</a>
+                    <Link to="/contact" onClick={() => setIsMenuOpen(false)} className="block py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">{t.contact}</Link>
                     <Link to="/login" onClick={() => setIsMenuOpen(false)} className="block py-2 font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">Login</Link>
                     <div className="pt-4 border-t border-gray-100 dark:border-white/10">
                         <a

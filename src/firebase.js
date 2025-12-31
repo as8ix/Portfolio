@@ -19,6 +19,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+
 // Analytics (optional, wrapped in try/catch in case not supported in environment)
 let analytics;
 try {
